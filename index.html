@@ -4,13 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            text-align: center;
+        }
+
+        #preview {
+            max-width: 50%;
+            max-height: 100%;
+        }
+    </style>
     <script src="https://cdn.rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 </head>
 <body>
-    <h1>QR Code Scanner v1.1</h1>
-    <video id="preview"></video>
-    <p id="result">QR Code result will appear here.</p>
-    <button id="toggleButton" onclick="toggleScanner()">Start Scanner</button>
+    <div id="container">
+        <h1>QR Code Scanner v1.2</h1>
+        <video id="preview"></video>
+        <p id="result"></p>
+        <button id="toggleButton" onclick="toggleScanner()">Start Scanner</button>
+    </div>
 
     <script>
         let scanner = null;
@@ -48,6 +68,7 @@
             if (scanner) {
                 scanner.stop();
                 scanner = null;
+                document.getElementById('result').innerText = ''; // Clear the result
                 document.getElementById('toggleButton').innerText = 'Start Scanner';
             } else {
                 initScanner();
