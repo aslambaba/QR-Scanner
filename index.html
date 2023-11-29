@@ -17,23 +17,37 @@
             text-align: center;
         }
 
+        #hint {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        #result {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
         #preview {
             max-width: 50%;
             max-height: 100%;
+            display: none; /* initially hide the video element */
         }
     </style>
     <script src="https://cdn.rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 </head>
 <body>
     <div id="container">
-        <h1>QR Code Scanner v1.2</h1>
-        <video id="preview"></video>
+        <h1>QR Code Scanner v1.3</h1>
+        <p id="hint">Bring the QR code in front of the camera</p>
         <p id="result"></p>
+        <video id="preview"></video>
         <button id="toggleButton" onclick="toggleScanner()">Start Scanner</button>
+        <audio id="audio" src="https://vubridge.com/Comp/Sounds/QRRead.mp3"></audio>
     </div>
 
     <script>
         let scanner = null;
+        let audio = document.getElementById('audio');
 
         function initScanner() {
             scanner = new Instascan.Scanner({ 
@@ -51,17 +65,26 @@
 
             scanner.addListener('scan', function (content) {
                 document.getElementById('result').innerText = 'Result: ' + content;
+                playAudio(); // play audio when a new result is scanned
+                document.getElementById('preview').style.display = 'none'; // hide the video element
             });
 
             Instascan.Camera.getCameras().then(function (cameras) {
                 if (cameras.length > 0) {
                     scanner.start(cameras[0]);
+                    document.getElementById('hint').innerText = 'QR code scanner is active';
                 } else {
                     console.error('No cameras found.');
+                    document.getElementById('hint').innerText = 'No cameras found.';
                 }
             }).catch(function (e) {
                 console.error(e);
+                document.getElementById('hint').innerText = 'Error accessing the camera.';
             });
+        }
+
+        function playAudio() {
+            audio.play();
         }
 
         function toggleScanner() {
@@ -69,10 +92,14 @@
                 scanner.stop();
                 scanner = null;
                 document.getElementById('result').innerText = ''; // Clear the result
+                document.getElementById('hint').innerText = 'Bring the QR code in front of the camera';
+                document.getElementById('preview').style.display = 'none'; // hide the video element
                 document.getElementById('toggleButton').innerText = 'Start Scanner';
             } else {
                 initScanner();
+                document.getElementById('hint').innerText = 'QR code scanner is active';
                 document.getElementById('toggleButton').innerText = 'Stop Scanner';
+                document.getElementById('preview').style.display = 'block'; // show the video element
             }
         }
 
